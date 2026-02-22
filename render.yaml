@@ -1,0 +1,28 @@
+# render.yaml — CheeseBot Render.com configuration
+# This file tells Render how to deploy your bot automatically.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: worker              # "worker" = background process, perfect for Discord bots
+    name: cheesebot
+    runtime: node
+    region: ohio              # Render has no UK region — Ohio (US East) has the lowest
+                              # latency to the UK. Other: oregon, frankfurt, singapore
+    plan: free                # Free tier — background workers do NOT spin down ✅
+    buildCommand: npm install
+    startCommand: node src/deploy-commands.js && node src/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DISCORD_TOKEN
+        sync: false           # You paste this manually in the Render dashboard
+      - key: CLIENT_ID
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: DEFAULT_PREFIX
+        value: "!"
+
+# ─── FREE TIER NOTE ───────────────────────────────────────────────────────────
+# Render's free "web service" type spins down after 15 min of inactivity.
+# This uses type: "worker" instead — workers stay online 24/7 on the free plan.
